@@ -8,27 +8,9 @@ Este documento descreve a arquitetura técnica do sistema **Sertão Bee**, suas 
 
 O sistema é composto por **dois módulos independentes** que se comunicam por **rádio LoRa (433 MHz) ponto a ponto**, sem necessidade de Wi-Fi, internet, gateway LoRaWAN ou qualquer operadora.
 
-```
-┌────────────────────────────────────────┐                           ┌────────────────────────────────────────┐
-│         MÓDULO DA COLMEIA              │                           │           ESTAÇÃO CENTRAL              │
-│         (Transmissor)                  │                           │           (Receptor)                   │
-│                                        │                           │                                        │
-│   ┌──────────┐                         │                           │                         ┌──────────┐   │
-│   │  AHT10   │── I²C ─┐                │     LoRa 433 MHz          │                ┌── I²C ─│   OLED   │   │
-│   └──────────┘        │                │     ponto a ponto         │                │        └──────────┘   │
-│                       ▼                │                           │                ▼                       │
-│   ┌──────────┐    ┌───────┐    ┌──────┴───┐   ──────────────▶  ┌───┴──────┐    ┌───────┐                   │
-│   │  HX711   │── SPI/GPIO│ESP32│  LoRa TX │                    │ LoRa RX  │ESP32│                          │
-│   └──────────┘    └───────┘    └──────────┘                    └──────────┘    └───────┘                   │
-│        ▲                                │                           │                                       │
-│        │                                │                           │                                       │
-│   ┌──────────┐                          │                           │                                       │
-│   │ Célula   │                          │                           │                                       │
-│   │  50 kg   │                          │                           │                                       │
-│   └──────────┘                          │                           │                                       │
-└─────────────────────────────────────────┘                           └────────────────────────────────────────┘
-       Instalado na colmeia                                                  Instalado na sede
-```
+![Arquitetura geral do Sertão Bee: módulo da colmeia (AHT10, HX711, célula de carga, ESP32 + LoRa TX) conectado por rádio LoRa 433 MHz à estação central (ESP32 + LoRa RX, Display OLED)](../imagens/arquitetura-geral.png)
+
+> Os diagramas detalhados de ligação pino a pino dos dois módulos estão em [`ligacoes.md`](ligacoes.md).
 
 ---
 
@@ -162,32 +144,7 @@ Antes do primeiro pacote, o display mostra `"SERTAO BEE — Estacao Central — 
 
 ## 5. Arquitetura Física
 
-```
-            ┌────────────────────────┐
-            │      Colmeia           │
-            │                        │
-            │  ┌──────────────┐      │
-            │  │   AHT10      │      │  ← Sensor no interior
-            │  └──────────────┘      │
-            │  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       │
-            │  ▒  Quadros   ▒        │
-            │  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       │
-            │  ╔══════════════╗      │
-            │  ║ Célula 50 kg ║      │  ← Sob a base
-            │  ╚══════════════╝      │
-            └─────────┬──────────────┘
-                      │ (cabos)
-                      ▼
-            ┌────────────────────────┐
-            │  Caixa de proteção     │
-            │  (lateral/externa)     │
-            │  ┌──────────┐          │
-            │  │  ESP32   │          │
-            │  │  HX711   │ ──LoRa──▶
-            │  │  LoRa TX │
-            │  └──────────┘          │
-            └────────────────────────┘
-```
+![Arquitetura física do Sertão Bee: corte lateral da colmeia mostrando AHT10 no interior, célula de carga sob a base e caixa de proteção lateral contendo ESP32, HX711 e LoRa TX](../imagens/arquitetura-fisica.png)
 
 A eletrônica fica **fora da colmeia**, em caixa de proteção lateral, para:
 - Manter as abelhas afastadas dos circuitos

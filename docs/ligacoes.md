@@ -135,42 +135,15 @@ Endereço I²C padrão do OLED 0,96": **0x3C**.
 
 ---
 
-## 3. Diagrama esquemático (texto)
+## 3. Diagrama esquemático
 
-### Transmissor
+### Transmissor — Módulo da Colmeia
 
-```
-                              ESP32 WROOM
-                       ┌────────────────────────┐
-        AHT10  SDA ────┤ 21                  5  ├──── CS    LoRa
-        AHT10  SCL ────┤ 22                 14  ├──── RST   LoRa
-                       │                        │
-        HX711  DT  ────┤ 32                 18  ├──── SCK   LoRa
-        HX711  SCK ────┤ 33                 19  ├──── MISO  LoRa
-                       │                    23  ├──── MOSI  LoRa
-                       │                    26  ├──── DIO0  LoRa
-                       │                        │
-                       │   3V3 ─── VCC dos módulos
-                       │   GND ─── GND comum
-                       └────────────────────────┘
-```
+![Diagrama de ligações do módulo da colmeia: ESP32 conectado ao AHT10 via I²C, HX711 + célula de carga 50 kg, e LoRa SX1278 via SPI](../imagens/ligacoes-transmissor.png)
 
-### Receptor
+### Receptor — Estação Central
 
-```
-                              ESP32 WROOM
-                       ┌────────────────────────┐
-        OLED   SDA ────┤ 21                  5  ├──── CS    LoRa
-        OLED   SCL ────┤ 22                 14  ├──── RST   LoRa
-                       │                    18  ├──── SCK   LoRa
-                       │                    19  ├──── MISO  LoRa
-                       │                    23  ├──── MOSI  LoRa
-                       │                    26  ├──── DIO0  LoRa
-                       │                        │
-                       │   3V3 ─── VCC dos módulos
-                       │   GND ─── GND comum
-                       └────────────────────────┘
-```
+![Diagrama de ligações da estação central: ESP32 conectado ao Display OLED SSD1306 via I²C e LoRa SX1278 via SPI](../imagens/ligacoes-receptor.png)
 
 ---
 
