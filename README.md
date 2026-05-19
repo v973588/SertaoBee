@@ -68,17 +68,7 @@ Instalada na sede da propriedade. Recebe os pacotes e mostra ao apicultor.
 
 ## Arquitetura
 
-```
-   ┌─────────────────────────────┐                      ┌──────────────────────────────┐
-   │      MÓDULO DA COLMEIA      │   LoRa 433 MHz       │       ESTAÇÃO CENTRAL        │
-   │       (Transmissor)         │ ───────────────────▶ │         (Receptor)           │
-   │                             │   Pacote SBEE,...    │                              │
-   │  AHT10  ──┐                 │                      │                              │
-   │  HX711  ──┤  ESP32 ──▶ LoRa │                      │  LoRa ──▶ ESP32 ──▶ OLED     │
-   │  Célula───┘                 │                      │                              │
-   └─────────────────────────────┘                      └──────────────────────────────┘
-        Instalado na colmeia                                 Instalado na sede
-```
+![Arquitetura geral do Sertão Bee: módulo da colmeia (AHT10, HX711, célula de carga, ESP32 + LoRa TX) conectado por rádio LoRa 433 MHz à estação central (ESP32 + LoRa RX, Display OLED)](imagens/arquitetura-geral.png)
 
 Formato do pacote enviado:
 
