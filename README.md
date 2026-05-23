@@ -27,11 +27,13 @@ Apoio à apicultura familiar do semiárido piauiense.
 
 ## Visão Geral
 
-O **Sertão Bee** é uma solução IoT de baixo custo, **totalmente offline**, que monitora **temperatura, umidade e peso** de colmeias e envia esses dados por **rádio LoRa** (433 MHz) para uma **estação central** instalada na sede da propriedade, onde o apicultor consulta as informações em um **display OLED**.
+O **Sertão Bee** é uma solução IoT de baixo custo, **totalmente offline**, que monitora **temperatura, umidade e peso** de colmeias e envia esses dados por **rádio LoRa** (433 MHz) para uma **estação central** instalada na sede da propriedade. Lá, o apicultor consulta as informações de duas formas: num **display OLED** (sem precisar de celular) e num **painel web** aberto no navegador do celular, servido por uma **rede Wi-Fi local criada pelo próprio ESP32** — sem internet, sem roteador externo.
+
+> **Importante:** o painel web usa um Wi-Fi *local* gerado pela própria estação central (modo Access Point). Não há internet envolvida em momento algum: o enlace colmeia→estação é por rádio LoRa, e o acesso ao painel é por uma rede privada do dispositivo. O sistema continua 100% offline.
 
 A proposta nasce de um problema real: no semiárido piauiense, a maioria dos apiários fica em zonas **sem sinal de internet**, e o pequeno apicultor familiar toma decisões de manejo apenas por observação direta, em visitas espaçadas. O resultado é perda de produção, risco de enxameação e visitas desnecessárias que estressam as colônias.
 
-O Sertão Bee entrega dados contínuos de manejo **sem depender de Wi-Fi, sem nuvem, sem assinatura e sem operadora**.
+O Sertão Bee entrega dados contínuos de manejo **sem depender de internet, sem nuvem, sem assinatura e sem operadora**. O único Wi-Fi usado é uma rede local do próprio ESP32, para o painel no celular — nunca para acessar a internet.
 
 ---
 
@@ -58,9 +60,10 @@ Instalado na caixa apícola. Lê os sensores e transmite os dados.
 
 ### 🟢 Estação Central (receptor)
 Instalada na sede da propriedade. Recebe os pacotes e mostra ao apicultor.
-- **ESP32 WROOM** — controle e processamento
+- **ESP32 WROOM** — controle, processamento e servidor web local
 - **LoRa SX1278 (433 MHz)** — recepção
-- **Display OLED SSD1306 0,96"** — leitura local em tempo quase real
+- **Display OLED SSD1306 0,96"** — leitura local em tempo quase real, sem precisar de celular
+- **Painel web local** — rede Wi-Fi `SertaoBee` criada pelo próprio ESP32; o apicultor abre `http://192.168.4.1` no navegador do celular e vê os dados em cards que atualizam sozinhos a cada 2 segundos
 
 > Para diagramas, ligações pino a pino e detalhes de cada componente, veja [`docs/arquitetura.md`](docs/arquitetura.md), [`docs/ligacoes.md`](docs/ligacoes.md) e [`docs/componentes.md`](docs/componentes.md).
 
@@ -68,7 +71,7 @@ Instalada na sede da propriedade. Recebe os pacotes e mostra ao apicultor.
 
 ## Arquitetura
 
-![Arquitetura geral do Sertão Bee: módulo da colmeia (AHT10, HX711, célula de carga, ESP32 + LoRa TX) conectado por rádio LoRa 433 MHz à estação central (ESP32 + LoRa RX, Display OLED)](imagens/arquitetura-geral.png)
+![Arquitetura geral do Sertão Bee: módulo da colmeia (AHT10, HX711, célula de carga, ESP32 + LoRa TX) conectado por rádio LoRa 433 MHz à estação central (ESP32 + LoRa RX), que exibe os dados no display OLED e num painel web acessível pelo celular via Wi-Fi local, sem internet](imagens/arquitetura-geral.png)
 
 Formato do pacote enviado:
 
@@ -142,7 +145,12 @@ sertao-bee/
 4. Abra o **Serial Monitor** (115200 baud) nos dois módulos para acompanhar o funcionamento.
 5. O OLED da estação central deve começar a exibir os dados após o primeiro pacote ser recebido (~3 segundos).
 
-> Para o roteiro completo de validação, ver [`docs/testes.md`](docs/testes.md).
+> As bibliotecas `WiFi` e `WebServer`, usadas no painel web, já vêm incluídas no core do ESP32 — não é preciso instalá-las separadamente.
+
+### Acessar o painel web (estação central)
+1. No celular, abra as redes Wi-Fi e conecte-se à rede **`SertaoBee`** (senha **`12345678`**), criada pela própria estação central.
+2. No navegador, acesse **`http://192.168.4.1`**.
+3. O painel mostra temperatura, umidade, peso, sinal LoRa (RSSI) e contador de pacotes, atualizando sozinho a cada 2 segundos. Tudo funciona **sem internet** — é uma rede local do próprio ESP32.
 
 ### Calibração da balança
 A constante `fatorCalibracao` no firmware do módulo da colmeia precisa ser ajustada para cada célula de carga. O procedimento (com 5+ pontos documentados) está descrito em [`docs/testes.md`](docs/testes.md).
